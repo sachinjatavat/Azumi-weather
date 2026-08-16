@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html class="light" lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+  <title>Asumi — Global Weather & Live Radar</title>
+
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+
+  <!-- Google Fonts & Material Symbols -->
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&display=swap" rel="stylesheet"/>
+
+  <!-- Leaflet CSS & JS for Interactive Radar Map -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+  <!-- Tailwind Config -->
+  <script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+            "on-secondary": "#ffffff",
+            "on-primary-container": "#ffe6eb",
+            "primary-fixed": "#ffd9e1",
+            "surface-dim": "#dcd9d9",
+            "surface-bright": "#fcf9f8",
+            "secondary-container": "#ffb8d9",
+            "surface": "#fcf9f8",
+            "surface-container": "#f0eded",
+            "tertiary-container": "#72686c",
+            "outline-variant": "#e2bdc5",
+            "on-background": "#1c1b1b",
+            "on-primary-fixed": "#3f001b",
+            "on-tertiary-fixed": "#201a1d",
+            "secondary-fixed-dim": "#f9b2d3",
+            "surface-container-low": "#f6f3f2",
+            "surface-tint": "#ba005d",
+            "error": "#ba1a1a",
+            "inverse-on-surface": "#f3f0ef",
+            "on-surface-variant": "#5a4046",
+            "on-surface": "#1c1b1b",
+            "on-secondary-fixed-variant": "#6a3651",
+            "background": "#fcf9f8",
+            "outline": "#8e6f76",
+            "primary-container": "#d10069",
+            "tertiary-fixed-dim": "#d0c3c8",
+            "surface-variant": "#e5e2e1",
+            "on-secondary-fixed": "#360a24",
+            "tertiary-fixed": "#eddfe4",
+            "on-tertiary-fixed-variant": "#4d4448",
+            "on-tertiary-container": "#f7e9ee",
+            "surface-container-highest": "#e5e2e1",
+            "error-container": "#ffdad6",
+            "on-secondary-container": "#7b4561",
+            "inverse-surface": "#313030",
+            "inverse-primary": "#ffb1c5",
+            "on-error-container": "#93000a",
+            "secondary": "#854d69",
+            "on-primary-fixed-variant": "#8f0046",
+            "on-primary": "#ffffff",
+            "on-tertiary": "#ffffff",
+            "secondary-fixed": "#ffd8e8",
+            "on-error": "#ffffff",
+            "surface-container-lowest": "#ffffff",
+            "primary": "#a40051",
+            "primary-fixed-dim": "#ffb1c5",
+            "tertiary": "#595054",
+            "surface-container-high": "#eae7e7"
+          },
+          "borderRadius": {
+            "DEFAULT": "1rem",
+            "lg": "2rem",
+            "xl": "3rem",
+            "full": "9999px"
+          },
+          "fontFamily": {
+            "body-md": ["DM Sans", "sans-serif"],
+            "body-lg": ["DM Sans", "sans-serif"],
+            "headline-lg": ["DM Sans", "sans-serif"],
+            "headline-md": ["DM Sans", "sans-serif"],
+            "display-lg": ["DM Sans", "sans-serif"]
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    body {
+      transition: background-color 0.3s ease, color 0.3s ease;
+    }
+
+    html.light body {
+      background-color: #fcf9f8;
+      color: #1c1b1b;
+    }
+    html.light .glass-panel {
+      background-color: rgba(255, 255, 255, 0.85);
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
+      border: 1px solid rgba(209, 0, 105, 0.12);
+      box-shadow: 0 12px 40px 0 rgba(209, 0, 105, 0.06);
+    }
+    html.light .glass-panel-top {
+      background-color: rgba(255, 255, 255, 0.9);
+      backdrop-filter: blur(16px);
+      border: 1px solid rgba(209, 0, 105, 0.12);
+    }
+
+    html.dark body {
+      background-color: #090a0f !important;
+      color: #ffffff !important;
+    }
+    html.dark #gradient-shader {
+      background: linear-gradient(to bottom right, #090a0f, #11131c, #181a28) !important;
+    }
+    html.dark nav#desktop-side-nav {
+      background-color: rgba(13, 15, 24, 0.9) !important;
+      border-color: rgba(255, 255, 255, 0.1) !important;
+      color: #ffffff !important;
+    }
+    html.dark .glass-panel {
+      background-color: rgba(18, 20, 32, 0.85) !important;
+      border-color: rgba(255, 255, 255, 0.1) !important;
+      box-shadow: 0 16px 48px 0 rgba(0, 0, 0, 0.6) !important;
+      color: #ffffff !important;
+    }
+    html.dark .glass-panel-top {
+      background-color: rgba(22, 24, 38, 0.9) !important;
+      border-color: rgba(255, 255, 255, 0.12) !important;
+      color: #ffffff !important;
+    }
+    html.dark input#search-input {
+      background-color: rgba(19, 21, 34, 0.9) !important;
+      border-color: rgba(255, 255, 255, 0.15) !important;
+      color: #ffffff !important;
+    }
+    html.dark #search-dropdown {
+      background-color: rgba(19, 21, 34, 0.98) !important;
+      border-color: rgba(255, 255, 255, 0.15) !important;
+      color: #ffffff !important;
+    }
+    html.dark h1, html.dark h2, html.dark h3, html.dark h4, html.dark strong {
+      color: #ffffff !important;
+    }
+    
+    .hide-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
+    .hide-scrollbar {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+
+    .fade-in-up {
+      animation: fadeInUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(14px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .leaflet-container {
+      font-family: 'DM Sans', sans-serif !important;
+    }
+  </style>
+</head>
+<body class="bg-background text-on-background font-body-lg overflow-x-hidden min-h-screen antialiased selection:bg-primary-container selection:text-on-primary-container">
+
+  <!-- Dynamic Ambient Weather Particle Canvas -->
+  <canvas id="weather-canvas" class="fixed inset-0 pointer-events-none z-0 opacity-40"></canvas>
+
+  <!-- Dynamic Ambient Shader -->
+  <div id="gradient-shader" class="fixed inset-0 z-0 pointer-events-none bg-gradient-to-br from-surface to-surface-container transition-colors duration-1000"></div>
+
+  <div class="relative z-10 flex min-h-screen w-full overflow-hidden">
+
+    <!-- Desktop Side Navigation Bar -->
+    <nav id="desktop-side-nav" class="hidden lg:flex flex-col fixed left-0 top-0 h-full p-4 space-y-6 w-64 border-r border-outline-variant/30 bg-surface/80 backdrop-blur-[40px] z-50 text-on-surface font-body-md text-body-md">
+      <div class="flex items-center space-x-3 px-3 py-2 mb-4 mt-2">
+        <div class="w-10 h-10 rounded-full bg-primary-container flex items-center justify-center text-on-primary-container shadow-[0_4px_12px_rgba(209,0,105,0.3)]">
+          <span class="material-symbols-outlined text-2xl" style='font-variation-settings: "FILL" 1;'>cloud</span>
+        </div>
+        <div>
+          <h1 class="text-xl font-bold text-on-background tracking-tight leading-none">Asumi</h1>
+          <p class="text-on-surface-variant text-[10px] uppercase tracking-widest mt-1.5 font-semibold">Global Weather</p>
+        </div>
+      </div>
+
+      <div class="space-y-2 flex-grow">
+        <button type="button" data-tab="dashboard" class="w-full bg-primary-container text-on-primary-container rounded-full p-3 flex items-center space-x-4 scale-95 active:scale-90 transition-all font-medium border border-primary-container/20 shadow-md cursor-pointer">
+          <span class="material-symbols-outlined text-on-primary-container drop-shadow-sm" style='font-variation-settings: "FILL" 1;'>home</span>
+          <span>Dashboard</span>
+        </button>
+
+        <button type="button" data-tab="forecast" class="w-full text-on-surface-variant p-3 flex items-center space-x-4 hover:bg-surface-variant hover:text-on-surface rounded-full transition-all scale-95 active:scale-90 font-medium cursor-pointer">
+          <span class="material-symbols-outlined">calendar_month</span>
+          <span>7-Day Forecast</span>
+        </button>
+
+        <button type="button" data-tab="airquality" class="w-full text-on-surface-variant p-3 flex items-center space-x-4 hover:bg-surface-variant hover:text-on-surface rounded-full transition-all scale-95 active:scale-90 font-medium cursor-pointer">
+          <span class="material-symbols-outlined">air</span>
+          <span>Air Quality</span>
+        </button>
+
+        <button type="button" data-tab="radar" class="w-full text-on-surface-variant p-3 flex items-center space-x-4 hover:bg-surface-variant hover:text-on-surface rounded-full transition-all scale-95 active:scale-90 font-medium cursor-pointer">
+          <span class="material-symbols-outlined">radar</span>
+          <span>Live Radar</span>
+        </button>
+
+        <button type="button" data-tab="news" class="w-full text-on-surface-variant p-3 flex items-center space-x-4 hover:bg-surface-variant hover:text-on-surface rounded-full transition-all scale-95 active:scale-90 font-medium cursor-pointer">
+          <span class="material-symbols-outlined">newspaper</span>
+          <span>Weather News</span>
+        </button>
+      </div>
+
+      <!-- Bottom Unit Switcher Pill -->
+      <div class="pt-4 border-t border-outline-variant/20 flex items-center justify-between px-2">
+        <span class="text-xs text-on-surface-variant font-medium">Temperature Unit</span>
+        <button type="button" id="unit-toggle-btn" class="px-4 py-1.5 rounded-full bg-primary-container/10 border border-primary-container/30 text-primary-container font-bold text-sm hover:bg-primary-container hover:text-on-primary-container transition-all">
+          °C
+        </button>
+      </div>
+    </nav>
+
+    <!-- Main Content Canvas -->
+    <main class="flex-1 lg:ml-64 h-full overflow-y-auto overflow-x-hidden p-3 sm:p-6 md:p-10 pb-28 sm:pb-32 lg:pb-10">
+
+      <!-- Top Header & Search Utilities -->
+      <header class="flex items-center justify-between mb-6 fade-in-up gap-3 relative z-30">
+        <!-- Search Input Bar -->
+        <div class="relative w-full max-w-xl">
+          <span class="material-symbols-outlined absolute left-3.5 top-1/2 -translate-y-1/2 text-on-surface-variant pointer-events-none text-xl">search</span>
+          <input id="search-input" class="w-full bg-surface/85 backdrop-blur-xl border border-outline-variant/30 rounded-full py-3 pl-10 pr-10 text-sm sm:text-base text-on-surface placeholder-on-surface-variant focus:outline-none focus:border-primary-container focus:ring-2 focus:ring-primary-container/30 font-body-md transition-all shadow-sm" placeholder="Search cities..." type="text" autocomplete="off"/>
+
+          <!-- Geolocation Button -->
+          <div class="absolute right-1.5 top-1/2 -translate-y-1/2 flex gap-1">
+            <button type="button" id="my-location-btn" class="w-8 h-8 rounded-full hover:bg-surface-variant flex items-center justify-center text-on-surface-variant transition-colors" title="Use current location">
+              <span class="material-symbols-outlined text-[18px]">my_location</span>
+            </button>
+          </div>
+
+          <!-- Search Results Dropdown -->
+          <div id="search-dropdown" class="hidden absolute top-full left-0 right-0 mt-2 bg-surface/95 backdrop-blur-2xl border border-outline-variant/30 rounded-3xl p-2 shadow-2xl z-50 max-h-96 overflow-y-auto hide-scrollbar">
+          </div>
+        </div>
+
+        <!-- Header Actions & LIVE VISITOR BADGE -->
+        <div class="flex items-center space-x-1.5 sm:space-x-3 flex-shrink-0">
+
+          <!-- LIVE VISITOR STATS BADGE -->
+          <div id="live-visitor-badge" class="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-full bg-surface-container/80 dark:bg-slate-900/80 border border-outline-variant/30 dark:border-white/10 text-xs font-mono text-on-surface shadow-sm">
+            <span class="w-2 h-2 rounded-full bg-emerald-500 animate-ping"></span>
+            <span class="font-bold text-emerald-600 dark:text-emerald-400" id="live-active-count">-- Online</span>
+            <span class="text-on-surface-variant">•</span>
+            <span id="total-visits-count" class="text-on-surface-variant font-medium">-- Views</span>
+          </div>
+
+          <button type="button" id="fav-toggle-btn" class="w-10 h-10 sm:w-11 sm:h-11 rounded-full bg-surface/80 backdrop-blur-xl border border-outline-variant/30 flex items-center justify-center hover:bg-surface-variant transition-colors shadow-sm" title="Favorite">
+            <span class="material-symbols-outlined text-on-surface-variant text-xl">bookmark_border</span>
+          </button>
+          <button type="button" id="theme-toggle-btn" class="w-10 h-10 sm:w-11 sm:h-11 rounded-full bg-surface/80 backdrop-blur-xl border border-outline-variant/30 flex items-center justify-center hover:bg-surface-variant transition-colors shadow-sm text-on-surface-variant" title="Toggle Light / Dark Mode">
+            <span class="material-symbols-outlined text-[20px]">dark_mode</span>
+          </button>
+        </div>
+      </header>
+
+      <!-- Main Dynamic Content Container -->
+      <div id="main-content-canvas">
+      </div>
+
+    </main>
+  </div>
+
+  <!-- Mobile Bottom Navigation Bar -->
+  <nav id="mobile-bottom-nav" class="lg:hidden fixed bottom-0 left-0 right-0 bg-surface/95 dark:bg-[#0d0f18]/95 backdrop-blur-2xl border-t border-outline-variant/30 dark:border-white/10 py-1.5 px-1 z-50 grid grid-cols-5 items-center justify-items-center shadow-2xl">
+    <button type="button" data-tab="dashboard" class="w-full flex flex-col items-center justify-center py-1 px-0.5 text-primary-container font-bold text-[10px] transition-all cursor-pointer">
+      <span class="material-symbols-outlined text-2xl">home</span>
+      <span class="truncate max-w-full">Home</span>
+    </button>
+    <button type="button" data-tab="forecast" class="w-full flex flex-col items-center justify-center py-1 px-0.5 text-on-surface-variant dark:text-slate-400 font-medium text-[10px] transition-all cursor-pointer">
+      <span class="material-symbols-outlined text-2xl">calendar_month</span>
+      <span class="truncate max-w-full">Forecast</span>
+    </button>
+    <button type="button" data-tab="airquality" class="w-full flex flex-col items-center justify-center py-1 px-0.5 text-on-surface-variant dark:text-slate-400 font-medium text-[10px] transition-all cursor-pointer">
+      <span class="material-symbols-outlined text-2xl">air</span>
+      <span class="truncate max-w-full">Air AQI</span>
+    </button>
+    <button type="button" data-tab="radar" class="w-full flex flex-col items-center justify-center py-1 px-0.5 text-on-surface-variant dark:text-slate-400 font-medium text-[10px] transition-all cursor-pointer">
+      <span class="material-symbols-outlined text-2xl">radar</span>
+      <span class="truncate max-w-full">Radar</span>
+    </button>
+    <button type="button" data-tab="news" class="w-full flex flex-col items-center justify-center py-1 px-0.5 text-on-surface-variant dark:text-slate-400 font-medium text-[10px] transition-all cursor-pointer">
+      <span class="material-symbols-outlined text-2xl">newspaper</span>
+      <span class="truncate max-w-full">News</span>
+    </button>
+  </nav>
+
+  <!-- Main JavaScript App Entry -->
+  <script type="module" src="/src/js/main.js"></script>
+</body>
+</html>
