@@ -1,0 +1,118 @@
+/* src/css/style.css */
+
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&display=swap');
+
+:root {
+  --primary-color: #a40051;
+  --primary-container: #d10069;
+}
+
+body {
+  font-family: 'DM Sans', sans-serif;
+  transition: background-color 0.3s ease, color 0.3s ease;
+  touch-action: manipulation;
+}
+
+/* Light Theme Styling */
+html.light body {
+  background-color: #fcf9f8;
+  color: #1c1b1b;
+}
+
+html.light .glass-panel {
+  background-color: rgba(255, 255, 255, 0.88);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid rgba(209, 0, 105, 0.12);
+  box-shadow: 0 12px 36px 0 rgba(209, 0, 105, 0.05);
+}
+
+html.light .glass-panel-top {
+  background-color: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(209, 0, 105, 0.12);
+}
+
+/* Dark Theme Styling */
+html.dark body {
+  background-color: #090a0f !important;
+  color: #f3f4f6 !important;
+}
+
+html.dark #gradient-shader {
+  background: linear-gradient(to bottom right, #090a0f, #11131c, #181a28) !important;
+}
+
+html.dark nav#desktop-side-nav {
+  background-color: rgba(13, 15, 24, 0.9) !important;
+  border-color: rgba(255, 255, 255, 0.1) !important;
+  color: #ffffff !important;
+}
+
+html.dark .glass-panel {
+  background-color: rgba(18, 20, 32, 0.88) !important;
+  border-color: rgba(255, 255, 255, 0.1) !important;
+  box-shadow: 0 16px 48px 0 rgba(0, 0, 0, 0.5) !important;
+  color: #ffffff !important;
+}
+
+html.dark .glass-panel-top {
+  background-color: rgba(22, 24, 38, 0.92) !important;
+  border-color: rgba(255, 255, 255, 0.12) !important;
+  color: #ffffff !important;
+}
+
+html.dark input#search-input {
+  background-color: rgba(19, 21, 34, 0.92) !important;
+  border-color: rgba(255, 255, 255, 0.15) !important;
+  color: #ffffff !important;
+}
+
+html.dark #search-dropdown {
+  background-color: rgba(19, 21, 34, 0.98) !important;
+  border-color: rgba(255, 255, 255, 0.15) !important;
+  color: #ffffff !important;
+}
+
+html.dark h1, html.dark h2, html.dark h3, html.dark h4, html.dark strong {
+  color: #ffffff !important;
+}
+
+/* Hide Scrollbar Utility */
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.hide-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* Animation utilities */
+.fade-in-up {
+  animation: fadeInUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Leaflet map responsiveness */
+.leaflet-container {
+  font-family: 'DM Sans', sans-serif !important;
+  border-radius: 1.5rem;
+  z-index: 10;
+}
+
+/* Mobile search dropdown hit-target optimization */
+.search-item-btn {
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+}

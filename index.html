@@ -16,6 +16,9 @@
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
+  <!-- Custom Glassmorphic & Animation CSS -->
+  <link rel="stylesheet" href="/src/css/style.css"/>
+
   <!-- Tailwind Config -->
   <script id="tailwind-config">
     tailwind.config = {
@@ -256,17 +259,8 @@
           </div>
         </div>
 
-        <!-- Header Actions & LIVE VISITOR BADGE -->
+        <!-- Header Actions -->
         <div class="flex items-center space-x-1.5 sm:space-x-3 flex-shrink-0">
-
-          <!-- LIVE VISITOR STATS BADGE -->
-          <div id="live-visitor-badge" class="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-full bg-surface-container/80 dark:bg-slate-900/80 border border-outline-variant/30 dark:border-white/10 text-xs font-mono text-on-surface shadow-sm">
-            <span class="w-2 h-2 rounded-full bg-emerald-500 animate-ping"></span>
-            <span class="font-bold text-emerald-600 dark:text-emerald-400" id="live-active-count">-- Online</span>
-            <span class="text-on-surface-variant">•</span>
-            <span id="total-visits-count" class="text-on-surface-variant font-medium">-- Views</span>
-          </div>
-
           <button type="button" id="fav-toggle-btn" class="w-10 h-10 sm:w-11 sm:h-11 rounded-full bg-surface/80 backdrop-blur-xl border border-outline-variant/30 flex items-center justify-center hover:bg-surface-variant transition-colors shadow-sm" title="Favorite">
             <span class="material-symbols-outlined text-on-surface-variant text-xl">bookmark_border</span>
           </button>
